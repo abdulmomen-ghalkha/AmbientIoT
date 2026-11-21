@@ -1,0 +1,32 @@
+# STM32CubeIDE build directories
+**/Debug/
+**/Release/
+
+# Object files
+*.o
+*.d
+*.su
+
+# Executables and binaries
+*.elf
+*.axf
+*.bin
+*.hex
+*.map
+
+# Generated libraries
+*.a
+
+# Logs
+*.log
+
+# IDE files
+.settings/
+.metadata/
+
+# VS Code (optional)
+.vscode/
+
+# OS files
+Thumbs.db
+.DS_Store
