@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <rect width="960" height="640" fill="#ffffff"/>
+  <text x="480" y="32" text-anchor="middle" font-size="20" font-weight="600" fill="#111">Signal wiring (breadboard, USB-powered baseline)</text>
+  <text x="480" y="52" text-anchor="middle" fill="#555">Left: sensors. Centre: STM32 Nucleo-32 (L412KB). Right: Seeed XIAO nRF52840 (UART to BLE bridge)</text>
+
+  <!-- ===== Nucleo ===== -->
+  <rect x="340" y="80" width="280" height="420" rx="10" fill="#e8f0fe" stroke="#1a56b0" stroke-width="2"/>
+  <text x="480" y="108" text-anchor="middle" font-size="16" font-weight="600" fill="#1a56b0">STM32 Nucleo-32</text>
+  <text x="480" y="126" text-anchor="middle" fill="#1a56b0">STM32L412KB</text>
+
+  <!-- Nucleo left pin labels -->
+  <g fill="#111">
+    <text x="352" y="165">3V3</text>
+    <text x="352" y="215">GND</text>
+    <text x="352" y="275">D4 · PB7</text>
+    <text x="352" y="325">D5 · PB6</text>
+    <text x="352" y="395">D6 · PB1</text>
+    <text x="352" y="445">A3 · PA4</text>
+    <text x="352" y="495">GND</text>
+  </g>
+  <!-- Nucleo right pin labels -->
+  <g fill="#111" text-anchor="end">
+    <text x="608" y="215">D1 · PA9 (USART1 TX)</text>
+    <text x="608" y="275">D0 · PA10 (USART1 RX)</text>
+    <text x="608" y="335">3V3 (see note 2)</text>
+    <text x="608" y="395">GND</text>
+  </g>
+
+  <!-- ===== SHT sensor ===== -->
+  <rect x="40" y="100" width="160" height="240" rx="8" fill="#fff4e5" stroke="#b25e00" stroke-width="2"/>
+  <text x="120" y="124" text-anchor="middle" font-weight="600" fill="#7a4100">SHT temp / RH</text>
+  <text x="120" y="141" text-anchor="middle" fill="#7a4100">breakout (I2C, 0x44)</text>
+  <g fill="#111" text-anchor="end">
+    <text x="188" y="165">VIN</text>
+    <text x="188" y="215">GND</text>
+    <text x="188" y="275">SDA</text>
+    <text x="188" y="325">SCL</text>
+  </g>
+
+  <!-- ===== Moisture sensor ===== -->
+  <rect x="40" y="368" width="160" height="150" rx="8" fill="#e9f7ec" stroke="#1e7a34" stroke-width="2"/>
+  <text x="120" y="382" text-anchor="middle" font-weight="600" fill="#14541f">Soil moisture</text>
+  <text x="120" y="399" text-anchor="middle" fill="#14541f">(analog)</text>
+  <g fill="#111" text-anchor="end">
+    <text x="188" y="395">VCC</text>
+    <text x="188" y="445">DATA</text>
+    <text x="188" y="495">GND</text>
+  </g>
+
+  <!-- ===== XIAO ===== -->
+  <rect x="760" y="150" width="160" height="260" rx="8" fill="#f1e8fb" stroke="#6a2fb0" stroke-width="2"/>
+  <text x="840" y="176" text-anchor="middle" font-weight="600" fill="#4a1d80">Seeed XIAO</text>
+  <text x="840" y="193" text-anchor="middle" fill="#4a1d80">nRF52840 (BLE)</text>
+  <g fill="#111">
+    <text x="772" y="215">D7 · RX</text>
+    <text x="772" y="275">D6 · TX</text>
+    <text x="772" y="335">3V3 (see note 2)</text>
+    <text x="772" y="395">GND</text>
+  </g>
+
+  <!-- ===== Wires: sensors (left side) ===== -->
+  <!-- SHT VIN -> 3V3 -->
+  <path d="M200 160 H340" stroke="#d32f2f" stroke-width="3" fill="none"/>
+  <!-- SHT GND -> GND -->
+  <path d="M200 210 H340" stroke="#222" stroke-width="3" fill="none"/>
+  <!-- SDA -> D4 -->
+  <path d="M200 270 H340" stroke="#1565c0" stroke-width="3" fill="none"/>
+  <!-- SCL -> D5 -->
+  <path d="M200 320 H340" stroke="#8e24aa" stroke-width="3" fill="none"/>
+  <!-- moisture VCC <- D6 -->
+  <path d="M200 390 H340" stroke="#ef6c00" stroke-width="3" fill="none"/>
+  <!-- moisture DATA -> A3 -->
+  <path d="M200 440 H340" stroke="#2e7d32" stroke-width="3" fill="none"/>
+  <!-- moisture GND -> GND -->
+  <path d="M200 490 H340" stroke="#222" stroke-width="3" fill="none"/>
+
+  <!-- wire labels (left) -->
+  <g font-size="12" text-anchor="middle">
+    <text x="270" y="153" fill="#d32f2f">3.3 V</text>
+    <text x="270" y="203" fill="#222">GND</text>
+    <text x="270" y="263" fill="#1565c0">I2C1_SDA</text>
+    <text x="270" y="313" fill="#8e24aa">I2C1_SCL</text>
+    <text x="270" y="383" fill="#ef6c00">power switch (High = on)</text>
+    <text x="270" y="433" fill="#2e7d32">ADC1_IN9</text>
+    <text x="270" y="483" fill="#222">GND</text>
+  </g>
+
+  <!-- ===== Wires: XIAO (right side) ===== -->
+  <!-- Nucleo PA9 TX -> XIAO D7 RX (y 210 -> 215) -->
+  <path d="M620 210 H760" stroke="#00838f" stroke-width="3" fill="none"/>
+  <!-- Nucleo PA10 RX <- XIAO D6 TX -->
+  <path d="M620 270 H760" stroke="#c2185b" stroke-width="3" fill="none"/>
+  <!-- 3V3 optional (dashed) -->
+  <path d="M620 330 H760" stroke="#d32f2f" stroke-width="3" stroke-dasharray="8 6" fill="none"/>
+  <!-- GND -->
+  <path d="M620 390 H760" stroke="#222" stroke-width="3" fill="none"/>
+
+  <g font-size="12" text-anchor="middle">
+    <text x="690" y="200" fill="#00838f">TX → RX</text>
+    <text x="690" y="260" fill="#c2185b">RX ← TX</text>
+    <text x="690" y="322" fill="#d32f2f">3.3 V (optional)</text>
+    <text x="690" y="380" fill="#222">GND</text>
+  </g>
+
+  <!-- connection dots -->
+  <g fill="#222">
+    <circle cx="340" cy="160" r="4"/><circle cx="340" cy="210" r="4"/><circle cx="340" cy="270" r="4"/><circle cx="340" cy="320" r="4"/>
+    <circle cx="340" cy="390" r="4"/><circle cx="340" cy="440" r="4"/><circle cx="340" cy="490" r="4"/>
+    <circle cx="200" cy="160" r="4"/><circle cx="200" cy="210" r="4"/><circle cx="200" cy="270" r="4"/><circle cx="200" cy="320" r="4"/>
+    <circle cx="200" cy="390" r="4"/><circle cx="200" cy="440" r="4"/><circle cx="200" cy="490" r="4"/>
+    <circle cx="620" cy="210" r="4"/><circle cx="620" cy="270" r="4"/><circle cx="620" cy="330" r="4"/><circle cx="620" cy="390" r="4"/>
+    <circle cx="760" cy="210" r="4"/><circle cx="760" cy="270" r="4"/><circle cx="760" cy="330" r="4"/><circle cx="760" cy="390" r="4"/>
+  </g>
+
+  <!-- ===== Notes ===== -->
+  <rect x="520" y="440" width="410" height="180" rx="8" fill="#fffbe6" stroke="#bfa100"/>
+  <text x="534" y="462" font-weight="600" fill="#6b5a00">Notes</text>
+  <g fill="#333" font-size="12">
+    <text x="534" y="482">1. All grounds must be common (Nucleo, sensors, XIAO).</text>
+    <text x="534" y="502">2. Connect 3V3 Nucleo → XIAO only when the XIAO is</text>
+    <text x="534" y="517">   NOT powered by its own USB-C. If both boards are</text>
+    <text x="534" y="532">   USB-powered, leave it out (regulator contention).</text>
+    <text x="534" y="552">3. PA2 / PA3 (USART2) go to the ST-LINK virtual COM</text>
+    <text x="534" y="567">   port over the Nucleo USB. No wiring needed.</text>
+    <text x="534" y="587">4. Check every wire with a multimeter before power-up.</text>
+    <text x="534" y="607">Source: AmbientIoT.pdf section II, AmbientIoT.ioc, main.c</text>
+  </g>
+</svg>

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 760" width="960" height="760" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <rect width="960" height="760" fill="#ffffff"/>
+  <text x="480" y="32" text-anchor="middle" font-size="20" font-weight="600" fill="#111">Power modes and the SB14 / SB9 solder bridges</text>
+  <text x="480" y="52" text-anchor="middle" fill="#555">Nucleo-32 (MB1180). Both bridges are cut open and re-routed through flying wires + pin headers.</text>
+
+  <!-- ================= Panel A: USB mode ================= -->
+  <rect x="30" y="70" width="900" height="200" rx="10" fill="#f6f8fa" stroke="#b0b7c0"/>
+  <text x="46" y="94" font-size="15" font-weight="600" fill="#111">A. USB mode: flashing and debugging. SB14 and SB9 CLOSED (jumpers on the headers)</text>
+
+  <rect x="60" y="112" width="200" height="130" rx="8" fill="#fff" stroke="#555" stroke-width="2"/>
+  <text x="160" y="140" text-anchor="middle" font-weight="600">USB + ST-LINK</text>
+  <text x="160" y="160" text-anchor="middle" fill="#555">programmer, 3V3 from USB</text>
+  <text x="160" y="180" text-anchor="middle" fill="#555">(high power consumption)</text>
+
+  <rect x="700" y="112" width="200" height="130" rx="8" fill="#e8f0fe" stroke="#1a56b0" stroke-width="2"/>
+  <text x="800" y="140" text-anchor="middle" font-weight="600" fill="#1a56b0">Nucleo board</text>
+  <text x="800" y="160" text-anchor="middle" fill="#1a56b0">STM32L412KB + 3V3 rail</text>
+
+  <!-- SB14 closed -->
+  <text x="480" y="138" text-anchor="middle" font-weight="600" fill="#d32f2f">SB14: 3V3</text>
+  <path d="M260 150 H420" stroke="#d32f2f" stroke-width="3"/>
+  <path d="M540 150 H700" stroke="#d32f2f" stroke-width="3"/>
+  <circle cx="420" cy="150" r="6" fill="#d32f2f"/><circle cx="540" cy="150" r="6" fill="#d32f2f"/>
+  <rect x="414" y="143" width="132" height="14" rx="4" fill="#d32f2f" opacity="0.9"/>
+  <text x="480" y="173" text-anchor="middle" font-size="12" fill="#333">header jumper fitted = closed</text>
+
+  <!-- SB9 closed -->
+  <text x="480" y="198" text-anchor="middle" font-weight="600" fill="#1565c0">SB9: NRST (reset)</text>
+  <path d="M260 210 H420" stroke="#1565c0" stroke-width="3"/>
+  <path d="M540 210 H700" stroke="#1565c0" stroke-width="3"/>
+  <circle cx="420" cy="210" r="6" fill="#1565c0"/><circle cx="540" cy="210" r="6" fill="#1565c0"/>
+  <rect x="414" y="203" width="132" height="14" rx="4" fill="#1565c0" opacity="0.9"/>
+  <text x="480" y="233" text-anchor="middle" font-size="12" fill="#333">header jumper fitted = closed</text>
+
+  <!-- ================= Panel B: external mode ================= -->
+  <rect x="30" y="290" width="900" height="250" rx="10" fill="#fff8f0" stroke="#d9b38c"/>
+  <text x="46" y="314" font-size="15" font-weight="600" fill="#111">B. External 3.3 V mode: low-power operation. SB14 and SB9 OPEN (no jumpers)</text>
+
+  <rect x="60" y="332" width="200" height="130" rx="8" fill="#eee" stroke="#aaa" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="160" y="360" text-anchor="middle" font-weight="600" fill="#888">ST-LINK (unpowered)</text>
+  <text x="160" y="380" text-anchor="middle" fill="#888">USB cable NOT connected</text>
+
+  <rect x="700" y="332" width="200" height="130" rx="8" fill="#e8f0fe" stroke="#1a56b0" stroke-width="2"/>
+  <text x="800" y="360" text-anchor="middle" font-weight="600" fill="#1a56b0">Nucleo board</text>
+  <text x="800" y="380" text-anchor="middle" fill="#1a56b0">3V3 pin ← external supply</text>
+  <text x="800" y="400" text-anchor="middle" fill="#1a56b0">GND pin ← external GND</text>
+
+  <text x="480" y="358" text-anchor="middle" font-weight="600" fill="#d32f2f">SB14: 3V3</text>
+  <path d="M260 370 H420" stroke="#d32f2f" stroke-width="3"/>
+  <path d="M540 370 H700" stroke="#d32f2f" stroke-width="3"/>
+  <circle cx="420" cy="370" r="6" fill="#fff" stroke="#d32f2f" stroke-width="2"/><circle cx="540" cy="370" r="6" fill="#fff" stroke="#d32f2f" stroke-width="2"/>
+  <text x="480" y="393" text-anchor="middle" font-size="12" fill="#333">gap = open</text>
+
+  <text x="480" y="418" text-anchor="middle" font-weight="600" fill="#1565c0">SB9: NRST (reset)</text>
+  <path d="M260 430 H420" stroke="#1565c0" stroke-width="3"/>
+  <path d="M540 430 H700" stroke="#1565c0" stroke-width="3"/>
+  <circle cx="420" cy="430" r="6" fill="#fff" stroke="#1565c0" stroke-width="2"/><circle cx="540" cy="430" r="6" fill="#fff" stroke="#1565c0" stroke-width="2"/>
+  <text x="480" y="453" text-anchor="middle" font-size="12" fill="#333">gap = open</text>
+
+  <text x="46" y="490" font-size="12" fill="#7a2d00" font-weight="600">NEVER power over USB while the external supply is connected.</text>
+  <text x="46" y="510" font-size="12" fill="#333">To reflash: disconnect the external supply, fit both jumpers (closed), connect USB. Afterwards remove USB and both jumpers.</text>
+  <text x="46" y="528" font-size="12" fill="#333">Open SB9 avoids a permanent reset state. Open SB14 switches off the ST-LINK, which is what saves the power.</text>
+
+  <!-- ================= Panel C: harvesting chain ================= -->
+  <rect x="30" y="560" width="900" height="175" rx="10" fill="#f0f9f1" stroke="#9cc9a3"/>
+  <text x="46" y="584" font-size="15" font-weight="600" fill="#111">C. Energy-harvesting chain (steps IX to X of the guide), feeds the Nucleo 3V3 pin in mode B</text>
+
+  <g font-size="12" text-anchor="middle">
+    <rect x="50" y="610" width="130" height="70" rx="8" fill="#fff" stroke="#e6a100" stroke-width="2"/>
+    <text x="115" y="640" font-weight="600">Solar panel</text><text x="115" y="658" fill="#555">+ → VIN, − → GND</text>
+
+    <rect x="230" y="610" width="150" height="70" rx="8" fill="#fff" stroke="#2e7d32" stroke-width="2"/>
+    <text x="305" y="634" font-weight="600">BQ25570 PMU</text><text x="305" y="652" fill="#555">JP4 MPPT, JP2 /EN→GND,</text><text x="305" y="667" fill="#555">JP3 VOUT_EN→VSTOR</text>
+
+    <rect x="430" y="610" width="130" height="70" rx="8" fill="#fff" stroke="#6a2fb0" stroke-width="2"/>
+    <text x="495" y="640" font-weight="600">Supercap</text><text x="495" y="658" fill="#555">on VBAT / GND, ≤ 4.1 V</text>
+
+    <rect x="610" y="610" width="150" height="70" rx="8" fill="#fff" stroke="#1a56b0" stroke-width="2"/>
+    <text x="685" y="634" font-weight="600">TPS63020</text><text x="685" y="652" fill="#555">buck-boost, 3.3 V out</text><text x="685" y="667" fill="#555">EN ← PMU BAT_OK</text>
+
+    <rect x="800" y="610" width="110" height="70" rx="8" fill="#e8f0fe" stroke="#1a56b0" stroke-width="2"/>
+    <text x="855" y="640" font-weight="600" fill="#1a56b0">Nucleo</text><text x="855" y="658" fill="#1a56b0">3V3 + GND pins</text>
+  </g>
+  <g stroke="#333" stroke-width="2.5" fill="#333">
+    <path d="M180 645 H230"/><path d="M380 645 H430"/><path d="M560 645 H610"/><path d="M760 645 H800"/>
+    <polygon points="230,645 221,640 221,650" stroke="none"/>
+    <polygon points="430,645 421,640 421,650" stroke="none"/>
+    <polygon points="610,645 601,640 601,650" stroke="none"/>
+    <polygon points="800,645 791,640 791,650" stroke="none"/>
+  </g>
+  <text x="46" y="712" font-size="12" fill="#333">Common GND for panel, PMU, supercap, buck-boost and Nucleo. Keep SB14 and SB9 open when running from this chain.</text>
+  <text x="46" y="728" font-size="12" fill="#555">Source: AmbientIoT.pdf sections IX and X, STM32 Nucleo-32 user manual UM1956.</text>
+</svg>
