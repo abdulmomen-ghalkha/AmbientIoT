@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 700" width="960" height="700" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <rect width="960" height="700" fill="#ffffff"/>
+  <text x="480" y="32" text-anchor="middle" font-size="20" font-weight="600" fill="#111">Power wiring (energy-harvesting chain, 3.3 V)</text>
+  <text x="480" y="52" text-anchor="middle" fill="#555">Solar panel → BQ25570EVM PMU + supercap → TPS63020 buck-boost (3.3 V) → Nucleo 3V3 pin (SB14 + SB9 open)</text>
+
+  <!-- ===== Solar panel ===== -->
+  <rect x="40" y="90" width="160" height="130" rx="8" fill="#fff8d6" stroke="#b08900" stroke-width="2"/>
+  <text x="120" y="114" text-anchor="middle" font-weight="600" fill="#6b5300">Solar panel</text>
+  <g fill="#111" text-anchor="end">
+    <text x="188" y="145">V+</text>
+    <text x="188" y="195">V−</text>
+  </g>
+
+  <!-- ===== Supercap ===== -->
+  <rect x="40" y="330" width="160" height="140" rx="8" fill="#e6f4f1" stroke="#00796b" stroke-width="2"/>
+  <text x="120" y="354" text-anchor="middle" font-weight="600" fill="#004d40">Supercapacitor</text>
+  <text x="120" y="371" text-anchor="middle" fill="#004d40">≤ 4.1 V before connecting</text>
+  <g fill="#111" text-anchor="end">
+    <text x="188" y="405">+ (long leg)</text>
+    <text x="188" y="455">−</text>
+  </g>
+
+  <!-- ===== PMU ===== -->
+  <rect x="290" y="80" width="220" height="410" rx="10" fill="#e8f0fe" stroke="#1a56b0" stroke-width="2"/>
+  <text x="400" y="106" text-anchor="middle" font-size="16" font-weight="600" fill="#1a56b0">BQ25570EVM</text>
+  <text x="400" y="124" text-anchor="middle" fill="#1a56b0">PMU (MPPT harvester)</text>
+  <g fill="#111">
+    <text x="302" y="145">VIN (J1 pin)</text>
+    <text x="302" y="195">GND (J3 pin)</text>
+    <text x="302" y="405">VBAT (J7 pin)</text>
+    <text x="302" y="455">GND</text>
+  </g>
+  <g fill="#111" text-anchor="end">
+    <text x="498" y="195">VBAT (J7)</text>
+    <text x="498" y="255">GND</text>
+    <text x="498" y="325">BAT_OK (J13)</text>
+    <text x="498" y="385">GND</text>
+  </g>
+  <g fill="#1a56b0" font-size="11">
+    <text x="302" y="245">Jumpers:</text>
+    <text x="302" y="262">JP4: 80% → VOC_SAMP (MPPT)</text>
+    <text x="302" y="277">JP2: /EN → GND (harvester on)</text>
+    <text x="302" y="292">JP3: VOUT_EN → VSTOR</text>
+  </g>
+
+  <!-- ===== Buck-boost ===== -->
+  <rect x="610" y="160" width="160" height="200" rx="8" fill="#fff4e5" stroke="#b25e00" stroke-width="2"/>
+  <text x="690" y="138" text-anchor="middle" font-weight="600" fill="#7a4100">TPS63020 buck-boost</text>
+  <text x="690" y="154" text-anchor="middle" fill="#7a4100">3.3 V out (only T2 closed)</text>
+  <g fill="#111">
+    <text x="622" y="195">VIN</text>
+    <text x="622" y="255">GND</text>
+    <text x="622" y="325">EN</text>
+  </g>
+  <g fill="#111" text-anchor="end">
+    <text x="758" y="195">VOUT</text>
+  </g>
+
+  <!-- ===== Nucleo ===== -->
+  <rect x="830" y="160" width="110" height="250" rx="8" fill="#f1e8fb" stroke="#6a2fb0" stroke-width="2"/>
+  <text x="885" y="138" text-anchor="middle" font-weight="600" fill="#4a1d80">Nucleo-32</text>
+  <text x="885" y="154" text-anchor="middle" fill="#4a1d80">L412KB (load)</text>
+  <g fill="#111">
+    <text x="842" y="195">3V3</text>
+    <text x="842" y="385">GND</text>
+  </g>
+  <g fill="#4a1d80" font-size="11">
+    <text x="842" y="250">SB14 open</text>
+    <text x="842" y="265">SB9 open</text>
+    <text x="842" y="280">USB unplugged</text>
+    <text x="842" y="310">sensors + XIAO</text>
+    <text x="842" y="325">as wiring.svg</text>
+  </g>
+
+  <!-- ===== Wires ===== -->
+  <!-- solar -->
+  <path d="M200 140 H290" stroke="#d32f2f" stroke-width="3" fill="none"/>
+  <path d="M200 190 H290" stroke="#222" stroke-width="3" fill="none"/>
+  <!-- supercap -->
+  <path d="M200 400 H290" stroke="#ef6c00" stroke-width="3" fill="none"/>
+  <path d="M200 450 H290" stroke="#222" stroke-width="3" fill="none"/>
+  <!-- PMU -> buck-boost -->
+  <path d="M510 190 H610" stroke="#ef6c00" stroke-width="3" fill="none"/>
+  <path d="M510 250 H610" stroke="#222" stroke-width="3" fill="none"/>
+  <path d="M510 320 H610" stroke="#00838f" stroke-width="3" fill="none"/>
+  <!-- PMU GND -> Nucleo GND (passes under buck-boost) -->
+  <path d="M510 380 H830" stroke="#222" stroke-width="3" fill="none"/>
+  <!-- buck VOUT -> Nucleo 3V3 -->
+  <path d="M770 190 H830" stroke="#d32f2f" stroke-width="3" fill="none"/>
+
+  <!-- wire labels -->
+  <g font-size="12" text-anchor="middle">
+    <text x="245" y="133" fill="#d32f2f">solar +</text>
+    <text x="245" y="183" fill="#222">GND</text>
+    <text x="245" y="393" fill="#ef6c00">VBAT</text>
+    <text x="245" y="443" fill="#222">GND</text>
+    <text x="560" y="183" fill="#ef6c00">VBAT</text>
+    <text x="560" y="243" fill="#222">GND</text>
+    <text x="560" y="313" fill="#00838f">enable</text>
+    <text x="670" y="373" fill="#222">common GND</text>
+    <text x="800" y="183" fill="#d32f2f">3.3 V</text>
+  </g>
+
+  <!-- connection dots -->
+  <g fill="#222">
+    <circle cx="200" cy="140" r="4"/><circle cx="200" cy="190" r="4"/><circle cx="200" cy="400" r="4"/><circle cx="200" cy="450" r="4"/>
+    <circle cx="290" cy="140" r="4"/><circle cx="290" cy="190" r="4"/><circle cx="290" cy="400" r="4"/><circle cx="290" cy="450" r="4"/>
+    <circle cx="510" cy="190" r="4"/><circle cx="510" cy="250" r="4"/><circle cx="510" cy="320" r="4"/><circle cx="510" cy="380" r="4"/>
+    <circle cx="610" cy="190" r="4"/><circle cx="610" cy="250" r="4"/><circle cx="610" cy="320" r="4"/>
+    <circle cx="770" cy="190" r="4"/><circle cx="830" cy="190" r="4"/><circle cx="830" cy="380" r="4"/>
+  </g>
+
+  <!-- ===== Notes ===== -->
+  <rect x="40" y="505" width="880" height="180" rx="8" fill="#fffbe6" stroke="#bfa100"/>
+  <text x="54" y="527" font-weight="600" fill="#6b5a00">Notes</text>
+  <g fill="#333" font-size="12">
+    <text x="54" y="547">1. Common ground: solar −, supercap −, PMU GND, buck-boost GND, Nucleo GND.</text>
+    <text x="54" y="565">2. SB14 and SB9 OPEN, Nucleo USB unplugged. Never power over USB while this chain is connected.</text>
+    <text x="54" y="583">3. Buck-boost: only the 3.3 V bridge (T2) closed. Supercap ≤ 4.1 V before connecting to VBAT (PMU max 4.2 V).</text>
+    <text x="54" y="601">4. BAT_OK protection: load switched off below ≈ 2.8 V (verified 23 Nov 2026); back on at ≈ 3 V (not yet verified).</text>
+    <text x="54" y="619">5. The XIAO is powered from the Nucleo 3V3 pin (no USB-C).</text>
+    <text x="54" y="637">6. J1 (pin) = J2 (screw) = VIN; J7 (pin) = J8 (screw) = VBAT. Pin headers used with female jumper wires. All EVM GND terminals are one ground.</text>
+    <text x="54" y="670" fill="#666">Source: AmbientIoT.pdf section X, TI bq25570EVM user guide Table 1, team hand sketch (docs/photos/2026-11-23_power-wiring-sketch.jpeg)</text>
+  </g>
+</svg>
