@@ -13,7 +13,7 @@ A low-power, solar-powered sensor node that measures **temperature, humidity and
 
 The build guide is [AmbientIoT.pdf](AmbientIoT.pdf). The team follows it as written: **3.3 V everywhere, ST-LINK disconnected through SB14 / SB9**. This README is the team's single source of truth for **what is done, what comes next, and how we work together** (Scrum).
 
-_Last updated: 2026-11-23 (code at commit `a0b05fa`)._
+_Last updated: 2026-11-24._
 
 > **Deadline: Monday 4 January 2027. Deliverable: the project report**, containing the four items in [Report deliverables](#deliverables). The dated plan is in [section 4](#sprint-plan) and [section 6](#6-milestones).
 
@@ -29,7 +29,19 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 
 <a id="latest-session"></a>
 
-### Latest session: 23 Nov 2026
+### Latest sessions
+
+**24 Nov 2026**
+
+| Outcome | Status |
+|---|---|
+| nRF Connect showed an empty value although data arrived (visible only in the log). Cause: the XIAO sent each reading as several notifications (default 20-byte packets plus a separate `"
+"` write), so the app showed only the last one, a bare newline. **Fixed in the XIAO sketch**: larger MTU (`configPrphBandwidth(BANDWIDTH_MAX)`) and one write per reading | ✅ |
+| nRF Connect screenshot of live data on USB power: `ADC=61.78 Temp=25.46 C Hum=30 %` ([screenshot](docs/nrf-connect/2026-11-24_unoptimized_usb-power.jpeg)) | ✅ |
+| SHT readings are plausible (25.46 °C, 30 % RH), so the fitted sensor answers the SHT3x driver (K1 mostly resolved; part marking still to note) | ✅ |
+| **Firmware on the board differs from git**: it sends `ADC=…`, the committed `main.c` sends `Moist=…`. Commit the flashed STM32 code (K14) | ⚠️ |
+
+**23 Nov 2026**
 
 | Outcome | Guide section | Status |
 |---|---|---|
@@ -53,7 +65,7 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 | D1 | **Final code, STM32 and BLE** | 🔵 Code works; not frozen or tagged yet | ⬜ Not started | Git tags `v1-unoptimized` and `v2-optimized`; folders in [section 5](#5-repository-layout) |
 | D2 | **Pictures of each hardware setup** | 🔵 Harvesting chain photographed without load ([photo](docs/photos/2026-11-23_pmu-setup-no-load.jpeg)). Still needed: USB breadboard, external 3.3 V, chain with the Nucleo as load, PPK2 setup | ⬜ | `docs/photos/`: (a) baseline breadboard on USB, (b) external 3.3 V with SB14/SB9 open, (c) supercap + buck-boost, (d) PMU + solar chain, (e) PPK2 profiling setup, (f) optimized setup (e.g. SHT LED removed) |
 | D3 | **Final power profiles (PPK2 screenshots)** | ⬜ | ⬜ | `measurements/`: unoptimized 10 s and 1 s windows; optimized 10 s window, 1 s in STOP2, 1 s active sensing, 1 s BLE burst (guide section XII figure list). Keep the `.ppk`/`.csv` next to each screenshot |
-| D4 | **Pictures of the data in nRF Connect** | 🔵 Data seen on the phone (USB and buck-boost power); screenshots to commit | ⬜ | `docs/nrf-connect/`: connected UART notifications (unoptimized); scanner showing the beacon's manufacturer data (optimized) |
+| D4 | **Pictures of the data in nRF Connect** | 🔵 USB-power screenshot ✅ ([24 Nov](docs/nrf-connect/2026-11-24_unoptimized_usb-power.jpeg)). Still needed: buck-boost-power screenshot, and a retake from the tagged `v1-unoptimized` code | ⬜ | `docs/nrf-connect/`: connected UART notifications (unoptimized); scanner showing the beacon's manufacturer data (optimized) |
 
 "Final" means taken from the tagged code: every screenshot and profile note records the firmware commit it came from. The code currently in the repo is what ran on 23 Nov; any fix made before tagging `v1-unoptimized` needs a quick re-check on hardware.
 
@@ -90,19 +102,22 @@ Found by reading `main.c`, `sht3x.c` and the XIAO sketch. The code works end to 
 
 | # | Issue | Where |
 |---|---|---|
-| K1 | **Sensor model must be confirmed.** The driver and `main.c` are for the **SHT3x** (address `0x44`, command `0x2C06`, status-register check `0x8010`), while the guide specifies an **SHT40** (command `0xFD`, no status register). An SHT40 would reject the SHT3x command, and because of K2 and K3 the node would then silently send `Temp=0.00 C Hum=0 %`. Check the part marking and that the phone shows plausible, changing values before the report screenshots | `sht3x.c`, `main.c` |
+| K1 | **Sensor model: mostly resolved 24 Nov.** The node returns plausible values (25.46 °C, 30 % RH), so the fitted part answers the SHT3x driver. Still note the part marking. Background: The driver and `main.c` are for the **SHT3x** (address `0x44`, command `0x2C06`, status-register check `0x8010`), while the guide specifies an **SHT40** (command `0xFD`, no status register). An SHT40 would reject the SHT3x command, and because of K2 and K3 the node would then silently send `Temp=0.00 C Hum=0 %`. Check the part marking and that the phone shows plausible, changing values before the report screenshots | `sht3x.c`, `main.c` |
 | K2 | **Sensor read result is ignored.** `Read_Sensors()` discards the `bool` return value of the SHT read, so a failed or CRC-failed read sends stale/zero data with no error | `main.c:83` |
 | K3 | **`printf` goes nowhere.** `__io_putchar` is not implemented, so the "SHT31 found / not found" message and any debug output is lost. Retarget to USART2 behind a `DEBUG` macro | `main.c:183`, `syscalls.c` |
 | K4 | **Humidity sent as an integer %** (driver returns whole percents), while temperature has 0.01 °C resolution | `sht3x.c:20` |
 | K5 | **Soil moisture is uncalibrated.** It is sent as `raw / 4095 × 100`, which is not a real moisture percentage. Needs a dry/wet calibration | `main.c:103` |
 | K6 | **ADC is not calibrated** (`HAL_ADCEx_Calibration_Start` is never called) and the sample time is the minimum 2.5 cycles, probably too short for the soil sensor's output impedance | `main.c:320` |
-| K7 | **Payload is a labelled text string** (`Moist=… Temp=… C Hum=… %\r\n`, about 38 bytes) instead of the guide's `31.8,45.0,324`. It carries a `\r\n` inside the frame and the XIAO adds another `\n`; at the default BLE MTU (20 data bytes) it can arrive on the phone in two notifications. Fine for the baseline; the optimized beacon needs a compact binary format (PB-17) | `main.c:117`, `*.ino:71` |
+| K7 | **Payload is a labelled text string** (`Moist=… Temp=… C Hum=… %\r\n`, about 38 bytes) instead of the guide's `31.8,45.0,324`. It carries a `\r\n` inside the frame and the XIAO adds another `\n`; at the default BLE MTU (20 data bytes) it can arrive on the phone in two notifications. The **XIAO side is fixed** (24 Nov: trailing `
+` stripped, one notification per reading). The STM32 side still sends the `
+`; the optimized beacon needs a compact binary format (PB-17) | `main.c:117` |
 | K8 | **Loop period is about 2 s, not the guide's 5 s.** `HAL_Delay(1000)` moisture settle plus `HAL_Delay(1000)` loop delay. The guide's unoptimized profile assumes a cycle every 5 s; set it to 5 s (or note the real value) before the baseline PPK2 profile | `main.c:93,204` |
 | K9 | **XIAO sketch**: TX power is `+4 dBm` (optimized target is `-4 dBm`), the file is named `*.c.ino`, and the `loop()` busy-polls the UART | `*.ino` |
 | K10 | `Error_Handler()` spins forever with interrupts off. Fine for development, but a hang is silent in the field | `main.c` |
 | K11 | Setting GPIOA to analog before sleep (once we add STOP2) also disables **SWD pins PA13/PA14**. Write a reflash recovery procedure first | future |
 | K12 | `AmbientIoT Debug.launch` contains an absolute path from one member's PC (`C:\Users\…\Desktop\…`). Make it portable or stop tracking it | `AmbientIoT_STM32/` |
 | K13 | `convert_temperature()` returns `uint32_t` for a signed value; works with GCC but is fragile. Make it `int32_t` | `sht3x.c:11` |
+| K14 | **Flashed STM32 firmware is not in git.** The board sends `ADC=… Temp=… C Hum=… %`, but the committed `main.c` formats `Moist=…`. Whoever has the flashed version should commit it, so the report code (D1) matches the screenshots | `main.c:118` |
 
 <a id="wiring"></a>
 
@@ -245,7 +260,7 @@ Legend: Status ⬜ todo, 🔵 in progress, ✅ done, ➖ dropped.
 
 | ID | Item | Step | Size | Report | Status |
 |---|---|---|---|---|---|
-| PB-06 | Confirm which SHT part is fitted (K1); keep one driver path and remove the other | 4 | S | D1 | ⬜ |
+| PB-06 | Confirm which SHT part is fitted (K1): SHT3x driver works (24 Nov); note the part marking | 4 | S | D1 | 🔵 |
 | PB-07 | Check the read result in `Read_Sensors()` (K2); keep humidity resolution (K4) | 4 | S | D1 | ⬜ |
 | PB-08 | Retarget `printf` to USART2 behind a `DEBUG` macro (K3) | 4 | S | D1 | ⬜ |
 | PB-12 | ADC calibration call and longer sample time (K6) | 4 | S | D1 | ⬜ |
@@ -253,7 +268,7 @@ Legend: Status ⬜ todo, 🔵 in progress, ✅ done, ➖ dropped.
 | PB-14 | Set the loop to the guide's 5 s cycle (K8); rename the sketch to `.ino` (K9) | 4 | S | D1 | ⬜ |
 | PB-16 | **Tag `v1-unoptimized`** (STM32 project + XIAO sketch) after a re-check on hardware | 4 | S | D1 | ⬜ |
 | PB-42 | **Photos**: baseline breadboard (USB) and PPK2 profiling setup | 4 | S | D2 | ⬜ |
-| PB-43 | **nRF Connect screenshots** of the unoptimized data (connected, UART notifications, plausible values) | 4 | S | D4 | ⬜ |
+| PB-43 | **nRF Connect screenshots** of the unoptimized data (connected, UART notifications, plausible values). USB-power screenshot taken 24 Nov; retake from `v1-unoptimized` | 4 | S | D4 | 🔵 |
 | PB-15 | PPK2 in series with the bench supply: **3.3 V, 100 mA limit**, Ampere Meter mode, PPK2 VIN to supply +, VOUT to the Nucleo **3V3** pin, common GND, SB14/SB9 open, USB unplugged | 4 | S | – | ⬜ |
 | PB-44 | **PPK2 unoptimized profile**: screenshots of 10 s and 1 s windows + `.ppk`/`.csv` + conditions note in `measurements/` (expected about 10 mA floor, 25–30 mA BLE spikes) | 4 | M | D3 | ⬜ |
 
@@ -367,7 +382,7 @@ Being ahead on the harvesting chain gives Sprint 5 as slack. If anything slips, 
 | `AmbientIoT_STM32_optimized/` | _Not created yet._ Optimized STM32 project (RTC + STOP2), so both versions sit side by side for the report |
 | `unoptimized_BLE_full_connection/` | XIAO nRF52840 sketch for the connected BLE UART baseline |
 | `optimized_BLE_burst_beaconing/` | _Not created yet._ Burst-beacon sketch (PB-22) |
-| `docs/` | `wiring.svg` (signals), `power-wiring.svg` (harvesting chain), `power-and-solder-bridges.svg`; `photos/` (setup photos and sketches, named `YYYY-MM-DD_<what>`); `nrf-connect/` to be added |
+| `docs/` | `wiring.svg` (signals), `power-wiring.svg` (harvesting chain), `power-and-solder-bridges.svg`; `photos/` (setup photos and sketches) and `nrf-connect/` (app screenshots), files named `YYYY-MM-DD_<what>` |
 | `measurements/` | _Not created yet_ (PB-05). PPK2 screenshots, `.ppk`/`.csv` exports and notes |
 | `wetransfer_ambient-iot-source-code_2026-09-11_0745/` | Course-provided reference code, **not reviewed yet**; to be gone through in a later session before it is used or committed |
 

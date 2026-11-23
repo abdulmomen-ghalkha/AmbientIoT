@@ -17,6 +17,10 @@ void setup()
     // Wait a moment for Serial Monitor
     delay(1000);
 
+    // Allow a large ATT MTU (up to 247) so one whole frame fits in a single
+    // notification. Must be called before Bluefruit.begin().
+    Bluefruit.configPrphBandwidth(BANDWIDTH_MAX);
+
     // Initialize BLE
     Bluefruit.begin();
     Bluefruit.setTxPower(4);
@@ -62,13 +66,22 @@ void loop()
     {
       if (receiving)
       {
+        // Strip the STM32's trailing "\r\n" so we control the line ending
+        while (rx_index > 0 &&
+               (rx_buffer[rx_index - 1] == '\r' || rx_buffer[rx_index - 1] == '\n'))
+        {
+          rx_index--;
+        }
         rx_buffer[rx_index] = '\0';
 
         Serial.print("Sending: ");
         Serial.println(rx_buffer);
 
-        bleuart.write((uint8_t*)rx_buffer, rx_index);
-        bleuart.write("\n");
+        // Send the frame plus one '\n' as a SINGLE notification. A separate
+        // write("\n") would arrive as its own notification and overwrite the
+        // value shown in nRF Connect, which then looks empty.
+        rx_buffer[rx_index] = '\n';
+        bleuart.write((uint8_t*)rx_buffer, rx_index + 1);
 
         rx_index = 0;
         receiving = false;
