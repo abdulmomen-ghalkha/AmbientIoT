@@ -35,11 +35,16 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 
 | Outcome | Status |
 |---|---|
-| nRF Connect showed an empty value although data arrived (visible only in the log). Cause: the XIAO sent each reading as several notifications (default 20-byte packets plus a separate `"
-"` write), so the app showed only the last one, a bare newline. **Fixed in the XIAO sketch**: larger MTU (`configPrphBandwidth(BANDWIDTH_MAX)`) and one write per reading | ✅ |
+| nRF Connect showed an empty value although data arrived (visible only in the log). Cause: the XIAO sent each reading as several notifications (default 20-byte packets plus a separate `"\n"` write), so the app showed only the last one, a bare newline. **Fixed in the XIAO sketch**: larger MTU (`configPrphBandwidth(BANDWIDTH_MAX)`) and one write per reading | ✅ |
 | nRF Connect screenshot of live data on USB power: `ADC=61.78 Temp=25.46 C Hum=30 %` ([screenshot](docs/nrf-connect/2026-11-24_unoptimized_usb-power.jpeg)) | ✅ |
 | SHT readings are plausible (25.46 °C, 30 % RH), so the fitted sensor answers the SHT3x driver (K1 mostly resolved; part marking still to note) | ✅ |
 | **Firmware on the board differs from git**: it sends `ADC=…`, the committed `main.c` sends `Moist=…`. Commit the flashed STM32 code (K14) | ⚠️ |
+| Node running on buck-boost power from the harvesting chain, Nucleo connected as load; nRF Connect shows `ADC=49.57 Temp=21.87 C Hum=22 %` ([screenshot](docs/nrf-connect/2026-11-24_unoptimized_buck-boost-power.png)) | ✅ |
+| Photo of the full setup (harvesting chain + breadboard with the Nucleo as load) ([photo](docs/photos/2026-11-24_full-setup-buck-boost-load.jpeg)) | ✅ |
+| Extra red LED removed from the breadboard (would add current to every PPK2 measurement). Earlier photo with the LED kept for reference ([before](docs/photos/2026-11-24_full-setup-buck-boost-load_before-led-removal.jpeg)) | ✅ |
+| nRF Connect after the LED removal, on buck-boost power: `ADC=0.00 Temp=22.02 C Hum=22 %` ([screenshot](docs/nrf-connect/2026-11-24_unoptimized_buck-boost-power_adc0.jpeg)) | ✅ |
+| **Note: soil moisture reads `ADC=0`** because the probe cannot be placed in soil or water in the lab, so it sits in dry air. Expected for this sensor (low output when dry). The moisture channel is therefore not demonstrated in the screenshots yet; see K5 | ℹ️ |
+| **BAT_OK thresholds measured** with the bench supply on VBAT (200 mA limit) instead of the supercap: **turn-on between 2.96 V and 2.98 V** when rising (off at 2.96 V, on at 2.98 V); **turn-off between 2.80 V and 2.70 V** when falling (still on at 2.80 V, off at 2.70 V). The gap of about 0.2–0.28 V is the intended hysteresis. Matches the guide (~3.0 V on, ~2.8 V off) | ✅ |
 
 **23 Nov 2026**
 
@@ -51,10 +56,10 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 | Solar panel connected, **harvesting confirmed** (supercap charging) | X.5 | ✅ |
 | **Sensor data received on the phone** with the node powered from the buck-boost | X | ✅ |
 | BAT_OK cut-out: load switched off when the supercap drained below ~2.8 V | X.5 | ✅ |
-| BAT_OK auto-restart: load back on when the supercap recharges to ~3 V | X.5 | ⬜ not tested yet |
+| BAT_OK auto-restart: load back on at ~3 V | X.5 | ✅ measured 24 Nov (2.96–2.98 V) |
 | Power wiring documented: team hand sketch and a clean diagram ([Power wiring](#power-wiring)) | – | ✅ |
 | Photo of the harvesting chain (solar, PMU, supercap, buck-boost) | – | ✅ taken **without the load connected**; VOUT not yet checked with a multimeter (taken outside the lab) |
-| Photo with the Nucleo connected as load, nRF Connect screenshot on buck-boost power | – | ⬜ next lab session (D2, D4) |
+| Photo with the Nucleo connected as load, nRF Connect screenshot on buck-boost power | – | ✅ done 24 Nov |
 
 <a id="deliverables"></a>
 
@@ -63,9 +68,9 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 | # | Report item | Unoptimized | Optimized | Where it lives in the repo |
 |---|---|---|---|---|
 | D1 | **Final code, STM32 and BLE** | 🔵 Code works; not frozen or tagged yet | ⬜ Not started | Git tags `v1-unoptimized` and `v2-optimized`; folders in [section 5](#5-repository-layout) |
-| D2 | **Pictures of each hardware setup** | 🔵 Harvesting chain photographed without load ([photo](docs/photos/2026-11-23_pmu-setup-no-load.jpeg)). Still needed: USB breadboard, external 3.3 V, chain with the Nucleo as load, PPK2 setup | ⬜ | `docs/photos/`: (a) baseline breadboard on USB, (b) external 3.3 V with SB14/SB9 open, (c) supercap + buck-boost, (d) PMU + solar chain, (e) PPK2 profiling setup, (f) optimized setup (e.g. SHT LED removed) |
+| D2 | **Pictures of each hardware setup** | 🔵 Harvesting chain photographed without load ([photo](docs/photos/2026-11-23_pmu-setup-no-load.jpeg)). Full setup with the Nucleo as load ✅ ([24 Nov](docs/photos/2026-11-24_full-setup-buck-boost-load.jpeg)). Still needed: USB breadboard, external 3.3 V, PPK2 setup | ⬜ | `docs/photos/`: (a) baseline breadboard on USB, (b) external 3.3 V with SB14/SB9 open, (c) supercap + buck-boost, (d) PMU + solar chain, (e) PPK2 profiling setup, (f) optimized setup (e.g. SHT LED removed) |
 | D3 | **Final power profiles (PPK2 screenshots)** | ⬜ | ⬜ | `measurements/`: unoptimized 10 s and 1 s windows; optimized 10 s window, 1 s in STOP2, 1 s active sensing, 1 s BLE burst (guide section XII figure list). Keep the `.ppk`/`.csv` next to each screenshot |
-| D4 | **Pictures of the data in nRF Connect** | 🔵 USB-power screenshot ✅ ([24 Nov](docs/nrf-connect/2026-11-24_unoptimized_usb-power.jpeg)). Still needed: buck-boost-power screenshot, and a retake from the tagged `v1-unoptimized` code | ⬜ | `docs/nrf-connect/`: connected UART notifications (unoptimized); scanner showing the beacon's manufacturer data (optimized) |
+| D4 | **Pictures of the data in nRF Connect** | 🔵 USB-power screenshot ✅ ([24 Nov](docs/nrf-connect/2026-11-24_unoptimized_usb-power.jpeg)). Buck-boost-power screenshots ✅ ([with LED](docs/nrf-connect/2026-11-24_unoptimized_buck-boost-power.png), [after LED removal, ADC=0](docs/nrf-connect/2026-11-24_unoptimized_buck-boost-power_adc0.jpeg)). Still needed: a retake from the tagged `v1-unoptimized` code | ⬜ | `docs/nrf-connect/`: connected UART notifications (unoptimized); scanner showing the beacon's manufacturer data (optimized) |
 
 "Final" means taken from the tagged code: every screenshot and profile note records the firmware commit it came from. The code currently in the repo is what ran on 23 Nov; any fix made before tagging `v1-unoptimized` needs a quick re-check on hardware.
 
@@ -81,7 +86,7 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 | BLE baseline | XIAO nRF52840 sketch: advertises as `IoT_Node`, Nordic UART service, STX/ETX state machine on `Serial1`, forwards each frame to the phone, overflow guard | `unoptimized_BLE_full_connection/unoptimized_BLE_full_connection.c.ino` |
 | Verification | Baseline verified by the team: STM32 → XIAO → phone working on USB power | team report; screenshots still to commit (D4) |
 | Hardware | SB14 and SB9 desoldered and re-soldered with wires + pin headers (after a first attempt that was not correct); confirmed working on 23 Nov | see [SB9 / SB14](#sb9-sb14) |
-| Power chain | 3.3 V buck-boost, supercap, BQ25570 PMU and solar panel connected; harvesting confirmed; sensor data on the phone from buck-boost power; BAT_OK cut-out below ~2.8 V seen (23 Nov) | `docs/photos/2026-11-23_pmu-setup-no-load.jpeg`, `docs/photos/2026-11-23_power-wiring-sketch.jpeg` |
+| Power chain | 3.3 V buck-boost, supercap, BQ25570 PMU and solar panel connected; harvesting confirmed; sensor data on the phone from buck-boost power; BAT_OK cut-out below ~2.8 V seen (23 Nov); thresholds measured, on at 2.96–2.98 V and off between 2.80 and 2.70 V (24 Nov) | `docs/photos/2026-11-23_pmu-setup-no-load.jpeg`, `docs/photos/2026-11-23_power-wiring-sketch.jpeg` |
 | Documentation | Signal wiring, power wiring and power / solder-bridge diagrams | `docs/wiring.svg`, `docs/power-wiring.svg`, `docs/power-and-solder-bridges.svg` |
 
 ### Not done yet
@@ -90,7 +95,6 @@ The **unoptimized node works end to end and runs from harvested energy**. The ba
 |---|---|
 | Unoptimized report evidence | Code not tagged; photos and nRF Connect screenshots not committed; **PPK2 baseline profile not captured** |
 | Calibration evidence | Soil-moisture calibration and a reference-thermometer check not recorded |
-| BAT_OK restart test | Cut-out verified; restart at ~3 V not tested yet |
 | Optimized firmware (STOP2 sleep, burst beaconing) | Not started in the new project (see note below) |
 | Report (due 4 Jan 2027) | Not started |
 
@@ -106,11 +110,9 @@ Found by reading `main.c`, `sht3x.c` and the XIAO sketch. The code works end to 
 | K2 | **Sensor read result is ignored.** `Read_Sensors()` discards the `bool` return value of the SHT read, so a failed or CRC-failed read sends stale/zero data with no error | `main.c:83` |
 | K3 | **`printf` goes nowhere.** `__io_putchar` is not implemented, so the "SHT31 found / not found" message and any debug output is lost. Retarget to USART2 behind a `DEBUG` macro | `main.c:183`, `syscalls.c` |
 | K4 | **Humidity sent as an integer %** (driver returns whole percents), while temperature has 0.01 °C resolution | `sht3x.c:20` |
-| K5 | **Soil moisture is uncalibrated.** It is sent as `raw / 4095 × 100`, which is not a real moisture percentage. Needs a dry/wet calibration | `main.c:103` |
+| K5 | **Soil moisture is uncalibrated.** It is sent as `raw / 4095 × 100`, which is not a real moisture percentage. Needs a dry/wet calibration. **Note (24 Nov):** in the lab the probe cannot be put in soil or water, so it reads `ADC=0` (dry air) in the screenshots. For the report, explain this, or dip the probe in a cup of water once to show the channel responds | `main.c:103` |
 | K6 | **ADC is not calibrated** (`HAL_ADCEx_Calibration_Start` is never called) and the sample time is the minimum 2.5 cycles, probably too short for the soil sensor's output impedance | `main.c:320` |
-| K7 | **Payload is a labelled text string** (`Moist=… Temp=… C Hum=… %\r\n`, about 38 bytes) instead of the guide's `31.8,45.0,324`. It carries a `\r\n` inside the frame and the XIAO adds another `\n`; at the default BLE MTU (20 data bytes) it can arrive on the phone in two notifications. The **XIAO side is fixed** (24 Nov: trailing `
-` stripped, one notification per reading). The STM32 side still sends the `
-`; the optimized beacon needs a compact binary format (PB-17) | `main.c:117` |
+| K7 | **Payload is a labelled text string** (`Moist=… Temp=… C Hum=… %\r\n`, about 38 bytes) instead of the guide's `31.8,45.0,324`. It carries a `\r\n` inside the frame and the XIAO adds another `\n`; at the default BLE MTU (20 data bytes) it can arrive on the phone in two notifications. The **XIAO side is fixed** (24 Nov: trailing `\r\n` stripped, one notification per reading). The STM32 side still sends the `\r\n`; the optimized beacon needs a compact binary format (PB-17) | `main.c:117` |
 | K8 | **Loop period is about 2 s, not the guide's 5 s.** `HAL_Delay(1000)` moisture settle plus `HAL_Delay(1000)` loop delay. The guide's unoptimized profile assumes a cycle every 5 s; set it to 5 s (or note the real value) before the baseline PPK2 profile | `main.c:93,204` |
 | K9 | **XIAO sketch**: TX power is `+4 dBm` (optimized target is `-4 dBm`), the file is named `*.c.ino`, and the `loop()` busy-polls the UART | `*.ino` |
 | K10 | `Error_Handler()` spins forever with interrupts off. Fine for development, but a hang is silent in the field | `main.c` |
@@ -199,7 +201,7 @@ Each step has a goal and a **gate**: we only call it finished when the gate is m
 | **0. Setup** | Rules agreed, scope known | 🟡 | Deadline and deliverables known ✅. Roles and sprint rhythm accepted (PB-02). Kit inventory done |
 | **1. Baseline code** | Unoptimized STM32 + XIAO firmware written | ✅ Done | Code committed |
 | **2. Baseline on hardware** | Real data on a phone | ✅ Done | Temperature, humidity and moisture reach the phone |
-| **3. External power and harvesting** | Run from supercap + PMU + solar at 3.3 V | ✅ Done 23 Nov (restart test and load photo pending) | Node runs from the chain, data on phone ✅; cut-out ✅, restart at ~3 V ⬜; chain photo ✅, photo with load ⬜ |
+| **3. External power and harvesting** | Run from supercap + PMU + solar at 3.3 V | ✅ Done 23–24 Nov | Node runs from the chain, data on phone ✅; cut-out ✅, restart ✅ (thresholds measured); chain photo ✅, photo with load ✅ |
 | **4. Unoptimized evidence** | Report items for the unoptimized version | ⬜ **Next** | K1, K2, K8 fixed; code tagged `v1-unoptimized`; setup photos; nRF Connect screenshots; PPK2 10 s + 1 s screenshots at 3.3 V (expected about 10 mA floor, 25–30 mA BLE spikes) |
 | **5. STM32 optimization** | Low-power MCU | ⬜ | STOP2 + RTC 30 s cycle, GPIO analog before sleep, no active waits; floor drop measured on PPK2 |
 | **6. BLE optimization** | Burst beacon, optimized evidence | ⬜ | Burst beacon, -4 dBm, DC-DC, LEDs off; code tagged `v2-optimized`; PPK2 screenshots (about 0.6 mA floor, about 12 mA peaks every 30 s) and nRF Connect screenshots committed |
@@ -211,7 +213,7 @@ Each step has a goal and a **gate**: we only call it finished when the gate is m
 
 ### Next steps (in order)
 
-1. **Next lab session, harvesting loose ends**: check buck-boost VOUT = 3.3 V with a multimeter, connect the Nucleo as load and photograph it, take an nRF Connect screenshot on buck-boost power, and run the BAT_OK restart test (recharge from below ~2.8 V to ~3 V, node restarts).
+1. **Commit the flashed STM32 `main.c`** (the version sending `ADC=…`, K14), so the code in git matches the screenshots.
 2. **Agree the Scrum roles and hold Sprint Planning for Sprint 2** (section 4).
 3. **Confirm the SHT part**, stop silent failures (K1, K2, K3) and **set the loop to 5 s** (K8), so the baseline matches the guide.
 4. **Freeze and tag `v1-unoptimized`**, then capture the unoptimized evidence: baseline photo, nRF Connect screenshots, PPK2 10 s and 1 s windows at 3.3 V / 100 mA.
@@ -253,8 +255,8 @@ Legend: Status ⬜ todo, 🔵 in progress, ✅ done, ➖ dropped.
 | PB-30 | BQ25570EVM PMU: cap on VBAT/GND below 4.1 V, buck-boost EN to BAT_OK, JP4 / JP2 / JP3 set | 3 | L | D2 | ✅ |
 | PB-31a | Solar panel on PMU VIN (J1) / GND (J3); harvesting confirmed | 3 | S | D2 | ✅ |
 | PB-31b | Brown-out test, cut-out: drain under about 2.8 V, load disconnects. Verified 23 Nov | 3 | S | – | ✅ |
-| PB-31c | Brown-out test, restart: recharge to about 3 V, node restarts on its own. Note the result | 3 | S | – | ⬜ |
-| PB-48 | **Photos and screenshots of the harvesting chain**: chain without load ✅ and hand sketch ✅ committed. Still to do: check VOUT with a multimeter, photo with the Nucleo connected as load, photo of the external 3.3 V setup, nRF Connect screenshot on buck-boost power | 3 | S | D2, D4 | 🔵 |
+| PB-31c | Brown-out test, restart: node restarts on its own at about 3 V. Measured 24 Nov with the bench supply on VBAT: on at 2.96–2.98 V (rising), off between 2.80 and 2.70 V (falling) | 3 | S | – | ✅ |
+| PB-48 | **Photos and screenshots of the harvesting chain**: chain without load ✅ and hand sketch ✅ committed. Photo with the Nucleo as load ✅, extra LED removed ✅ and nRF Connect screenshots on buck-boost power ✅ (24 Nov). Still to do: photo of the external 3.3 V setup | 3 | S | D2, D4 | 🔵 |
 
 ### Unoptimized evidence (Step 4)
 
@@ -264,7 +266,7 @@ Legend: Status ⬜ todo, 🔵 in progress, ✅ done, ➖ dropped.
 | PB-07 | Check the read result in `Read_Sensors()` (K2); keep humidity resolution (K4) | 4 | S | D1 | ⬜ |
 | PB-08 | Retarget `printf` to USART2 behind a `DEBUG` macro (K3) | 4 | S | D1 | ⬜ |
 | PB-12 | ADC calibration call and longer sample time (K6) | 4 | S | D1 | ⬜ |
-| PB-13 | Soil moisture calibration: raw ADC in dry air and in water, define the percentage mapping (K5) | 4 | M | D1 | ⬜ |
+| PB-13 | Soil moisture calibration: raw ADC in dry air and in water, define the percentage mapping (K5). Probe cannot be wetted in the lab (reads 0 in dry air); needs a cup of water or a soil sample | 4 | M | D1 | ⬜ |
 | PB-14 | Set the loop to the guide's 5 s cycle (K8); rename the sketch to `.ino` (K9) | 4 | S | D1 | ⬜ |
 | PB-16 | **Tag `v1-unoptimized`** (STM32 project + XIAO sketch) after a re-check on hardware | 4 | S | D1 | ⬜ |
 | PB-42 | **Photos**: baseline breadboard (USB) and PPK2 profiling setup | 4 | S | D2 | ⬜ |
@@ -356,7 +358,7 @@ Nobody is a fixed "owner" of an area. Because hardware is shared, **anyone may p
 | Sprint | Dates | Goal | Main items |
 |---|---|---|---|
 | 1 (done) | before 23 Nov | Sensor readings reach a phone over BLE on USB power | PB-09, PB-10, PB-11 |
-| **2** | Mon 23 Nov – Sun 29 Nov | Harvesting chain working ✅ (23 Nov); **unoptimized evidence complete** (D1–D4, unoptimized column) | PB-27–PB-31b ✅, PB-31c, PB-48, PB-02–PB-08, PB-12–PB-16, PB-42–PB-44. Stretch: PB-17 |
+| **2** | Mon 23 Nov – Sun 29 Nov | Harvesting chain working ✅ (23 Nov); **unoptimized evidence complete** (D1–D4, unoptimized column) | PB-27–PB-31c ✅, PB-48, PB-02–PB-08, PB-12–PB-16, PB-42–PB-44. Stretch: PB-17 |
 | **3** | Mon 30 Nov – Sun 6 Dec | **STM32 optimized**: STOP2 + RTC, GPIO analog, no active waits, measured | PB-17–PB-21, PB-24, PB-25 (MCU part) |
 | **4** | Mon 7 Dec – Sun 13 Dec | **BLE optimized and frozen**: burst beacon, all optimized evidence committed | PB-22, PB-23, PB-25, PB-26, PB-45–PB-47. Report outline agreed |
 | **5** | Mon 14 Dec – Sun 20 Dec | Hardware buffer; optimized node on the harvesting chain; **full report draft** | PB-49, PB-38, PB-39 draft |
@@ -394,7 +396,7 @@ Being ahead on the harvesting chain gives Sprint 5 as slack. If anything slips, 
 |---|---|---|---|
 | M0 | Team organised, deadline known | Mon 23 Nov 2026 | PB-01 ✅, PB-02 to PB-04 |
 | M1 | Data on phone (USB power) | ✅ reached (date to record) | Step 2 gate |
-| M2 | Runs from supercap + PMU + solar | ✅ 23 Nov 2026 | Step 3 gate (restart test and photo with load pending) |
+| M2 | Runs from supercap + PMU + solar | ✅ 23–24 Nov 2026 | Step 3 gate |
 | M3 | Unoptimized evidence complete, `v1-unoptimized` tagged | Sun 29 Nov 2026 | Step 4 gate |
 | M4 | STM32 optimization measured | Sun 6 Dec 2026 | Step 5 gate |
 | M5 | Optimized evidence complete, `v2-optimized` tagged | Sun 13 Dec 2026 | Step 6 gate |
