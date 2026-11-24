@@ -115,7 +115,7 @@ void Transmit_Data(void)
 
 
     sprintf(buffer,
-    		"Moist=%.2f Temp=%.2f C Hum=%lu %%\r\n",
+    		"ADC=%.2f Temp=%.2f C Hum=%lu %%\r\n",
 			moisture,
 			temperature / 100.0f,
 			humidity);

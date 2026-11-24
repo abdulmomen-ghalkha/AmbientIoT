@@ -123,7 +123,7 @@ Found by reading `main.c`, `sht3x.c` and the XIAO sketch. The code works end to 
 | K11 | Setting GPIOA to analog before sleep (once we add STOP2) also disables **SWD pins PA13/PA14**. Write a reflash recovery procedure first | future |
 | K12 | `AmbientIoT Debug.launch` contains an absolute path from one member's PC (`C:\Users\…\Desktop\…`). Make it portable or stop tracking it | `AmbientIoT_STM32/` |
 | K13 | `convert_temperature()` returns `uint32_t` for a signed value; works with GCC but is fragile. Make it `int32_t` | `sht3x.c:11` |
-| K14 | **Flashed STM32 firmware is not in git.** The board sends `ADC=… Temp=… C Hum=… %`, but the committed `main.c` formats `Moist=…`. Whoever has the flashed version should commit it, so the report code (D1) matches the screenshots | `main.c:118` |
+| K14 | **Flashed STM32 source was lost; reconstructed.** The board sends `ADC=… Temp=… C Hum=… %`, but the committed `main.c` formatted `Moist=…`, and the edited source could not be found (not in git history or the course code). The team decided to change only the label (`Moist=` to `ADC=`) as the best reconstruction. **Risk:** other unknown differences may exist. To confirm: flash the rebuilt code, check the nRF Connect format and that the PPK2 average is still about 11.8 mA. Optional: read the board flash with STM32CubeProgrammer first and keep the `.bin` as a record | `main.c:118` |
 
 <a id="wiring"></a>
 
@@ -217,7 +217,7 @@ Each step has a goal and a **gate**: we only call it finished when the gate is m
 
 ### Next steps (in order)
 
-1. **Commit the flashed STM32 `main.c`** (the version sending `ADC=…`, K14), so the code in git matches the screenshots.
+1. **Verify the reconstructed STM32 code (K14)**: flash it, confirm nRF Connect shows `ADC=…` and the PPK2 average is still about 11.8 mA, then tag `v1-unoptimized`.
 2. **Agree the Scrum roles and hold Sprint Planning for Sprint 2** (section 4).
 3. **Confirm the SHT part**, stop silent failures (K1, K2, K3) and **set the loop to 5 s** (K8), so the baseline matches the guide.
 4. **Freeze and tag `v1-unoptimized`**, then capture the unoptimized evidence: baseline photo, nRF Connect screenshots, PPK2 10 s and 1 s windows at 3.3 V / 100 mA.
