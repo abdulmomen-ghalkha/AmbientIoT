@@ -30,3 +30,6 @@
 # OS files
 Thumbs.db
 .DS_Store
+
+# Raw PPK2 CSV exports are large; commit the gzipped copy (.csv.gz) instead
+measurements/**/*.csv
